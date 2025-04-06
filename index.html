@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinSakhi - Women Financial Empowerment</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/annyang/2.6.1/annyang.min.js"></script>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; background: linear-gradient(to right, #fef6ff, #e4d9ff); }
+    .container { max-width: 700px; margin: auto; background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #4b0082; font-size: 2rem; }
+    label { display: block; margin-top: 20px; font-weight: bold; color: #333; }
+    input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; }
+    button { margin-top: 20px; padding: 12px 20px; background-color: #4b0082; color: white; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; }
+    button:hover { background-color: #3a006e; }
+    .score { margin-top: 25px; font-size: 1.3em; font-weight: bold; color: green; text-align: center; }
+    .recommendations, .modules, .user-data { margin-top: 30px; background: #fdfdff; padding: 20px; border-radius: 10px; border-left: 5px solid #4b0082; }
+    ul { padding-left: 20px; }
+    .badge { display: inline-block; padding: 5px 10px; background: #4b0082; color: white; border-radius: 5px; font-size: 0.8em; margin-left: 10px; }
+    .loader { display: none; border: 4px solid #f3f3f3; border-top: 4px solid #4b0082; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 10px auto; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 id="title">FinSakhi Demo</h1>
+
+    <label for="language">Choose Language:</label>
+    <select id="language" onchange="translatePage()">
+      <option value="en">English</option>
+      <option value="hi">Hindi</option>
+    </select>
+
+    <label for="name" id="label-name">Name:</label>
+    <input type="text" id="name">
+
+    <label for="usage" id="label-usage">Daily Mobile Usage (hrs):</label>
+    <input type="number" id="usage">
+
+    <label for="upi" id="label-upi">Monthly UPI Transactions:</label>
+    <input type="number" id="upi">
+
+    <button onclick="startVoiceInput()">🎤 Voice Input</button>
+    <button onclick="calculateScore()" id="generate-btn">Generate Credit Score</button>
+    <div class="loader" id="loader"></div>
+
+    <div id="result" class="score"></div>
+
+    <div class="recommendations" id="recommendations" style="display:none">
+      <h3 id="recommendation-title">Recommended Schemes:</h3>
+      <ul>
+        <li>PMEGP Scheme (₹5L–₹10L)</li>
+        <li>Microfinance Loan through Partner NBFC</li>
+        <li>SHG Blockchain Peer Lending</li>
+      </ul>
+    </div>
+
+    <div class="modules">
+      <h3 id="module-title">Financial Literacy Modules:</h3>
+      <ul>
+        <li id="mod1">💰 Budgeting Basics <span class="badge">Completed ✅</span></li>
+        <li id="mod2">📊 Understanding Interest Rates <span class="badge">In Progress</span></li>
+        <li id="mod3">🛒 WhatsApp Business Marketing <span class="badge">Not Started</span></li>
+      </ul>
+      <a href="https://wa.me/919999999999?text=Hi%20I%20want%20to%20learn%20Financial%20Modules%20with%20FinSakhi" target="_blank">
+        <button>Join WhatsApp Community</button>
+      </a>
+    </div>
+
+    <div class="user-data" id="user-data" style="display:none">
+      <h3>User Submitted Data:</h3>
+      <p><strong>Name:</strong> <span id="user-name"></span></p>
+      <p><strong>Mobile Usage:</strong> <span id="user-usage"></span> hrs/day</p>
+      <p><strong>UPI Transactions:</strong> <span id="user-upi"></span>/month</p>
+    </div>
+  </div>
+
+  <script>
+    function calculateScore() {
+      const loader = document.getElementById('loader');
+      loader.style.display = 'block';
+      setTimeout(() => {
+        loader.style.display = 'none';
+        const usage = parseFloat(document.getElementById('usage').value) || 0;
+        const upi = parseFloat(document.getElementById('upi').value) || 0;
+        let score = 500 + Math.min(usage * 5, 100) + Math.min(upi * 10, 200);
+
+        document.getElementById('result').innerText = `Credit Readiness Score: ${score}`;
+        document.getElementById('recommendations').style.display = 'block';
+        document.getElementById('user-data').style.display = 'block';
+
+        document.getElementById('user-name').innerText = document.getElementById('name').value;
+        document.getElementById('user-usage').innerText = usage;
+        document.getElementById('user-upi').innerText = upi;
+
+        fetch('https://your-backend-api-url.com/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: document.getElementById('name').value,
+            usage, upi, score
+          })
+        }).then(res => console.log('Data saved'));
+      }, 1200);
+    }
+
+    function translatePage() {
+      const lang = document.getElementById('language').value;
+      if (lang === 'hi') {
+        document.getElementById('title').innerText = 'फिनसखी डेमो';
+        document.getElementById('label-name').innerText = 'नाम:';
+        document.getElementById('label-usage').innerText = 'दैनिक मोबाइल उपयोग (घंटे):';
+        document.getElementById('label-upi').innerText = 'मासिक यूपीआई लेनदेन:';
+        document.getElementById('generate-btn').innerText = 'क्रेडिट स्कोर जनरेट करें';
+        document.getElementById('recommendation-title').innerText = 'अनुशंसित योजनाएँ:';
+        document.getElementById('module-title').innerText = 'वित्तीय साक्षरता मॉड्यूल:';
+        document.getElementById('mod1').innerHTML = '💰 बजटिंग मूल बातें <span class="badge">पूर्ण ✅</span>';
+        document.getElementById('mod2').innerHTML = '📊 ब्याज दरें समझना <span class="badge">प्रगति में</span>';
+        document.getElementById('mod3').innerHTML = '🛒 व्हाट्सएप व्यवसाय विपणन <span class="badge">प्रारंभ नहीं हुआ</span>';
+      } else {
+        location.reload(); // Refresh to English
+      }
+    }
+
+    function startVoiceInput() {
+      if (annyang) {
+        annyang.start();
+        annyang.addCommands({
+          'my name is *tag': function(tag) { document.getElementById('name').value = tag; },
+          'mobile usage *num': function(num) { document.getElementById('usage').value = num; },
+          'UPI transaction *num': function(num) { document.getElementById('upi').value = num; }
+        });
+      } else {
+        alert('Voice recognition not supported');
+      }
+    }
+  </script>
+</body>
+</html>
